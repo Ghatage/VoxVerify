@@ -162,6 +162,33 @@ def agent_profile():
 def serve_static(path):
     return send_from_directory('static', path)
 
+@app.route('/review', methods=['GET'])
+def review():
+    # Get the ratings from the query string
+    ratings = request.args.get('ratings', '')
+    
+    try:
+        # Split the space-separated ratings
+        accuracy, completion, flow, resolution = ratings.split()
+        
+        # Print the ratings to the console
+        print(f"Review ratings received:")
+        print(f"Accuracy: {accuracy}")
+        print(f"Completion: {completion}")
+        print(f"Flow: {flow}")
+        print(f"Resolution: {resolution}")
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Ratings received'
+        })
+    except Exception as e:
+        print(f"Error processing ratings: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'Error processing ratings: {str(e)}'
+        }), 400
+
 # API routes
 @app.route('/identify', methods=['POST'])
 def identify_endpoint():
