@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Profile</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .title {
+            margin-top: 0;
+            color: #fff;
+            font-size: 24px;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .profile-table th, .profile-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .profile-table th {
+            background-color: #111;
+            font-weight: normal;
+            opacity: 0.8;
+            width: 180px;
+        }
+        
+        .profile-table tr:last-child th, .profile-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .profile-table td {
+            word-break: break-word;
+        }
+        
+        .back-button {
+            margin-top: 30px;
+            padding: 8px 16px;
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        
+        .key-container {
+            background-color: #111;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: left;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Agent Profile on Blockchain</h1>
+        
+        <table class="profile-table">
+            <tr>
+                <th>Agent Name</th>
+                <td>SVB Helpline Agent #2</td>
+            </tr>
+            <tr>
+                <th>Agent ID</th>
+                <td>mtbbYxlxClWYk9VnUfnr</td>
+            </tr>
+            <tr>
+                <th>Public Key</th>
+                <td>
+                    <div class="key-container">
+                        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5FAAAIGzBYjp27PJgPvy+Qb97eiknfTjx+C1fdpaEis+nZiM6 jeff@ssa.gov
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>Signing Authority</th>
+                <td>Silicon Valley Bank<br>Issued by: DigiCert EV RSA CA G2</td>
+            </tr>
+            <tr>
+                <th>Number of Calls</th>
+                <td>37</td>
+            </tr>
+            <tr>
+                <th>Avg Customer Rating</th>
+                <td>8/10</td>
+            </tr>
+        </table>
+        
+        <button class="back-button" onclick="window.location.href='/'">Back to Verification</button>
+    </div>
+</body>
+</html> 
