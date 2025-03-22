@@ -10,6 +10,7 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import utils
 import base64
 from flask import Flask, request, jsonify, abort, render_template, send_from_directory
+from client import AgentStoreClient, Agent
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -148,6 +149,65 @@ def verify_message(encoded_signature):
         debug_info["steps"].append("General error in verification process")
         print(f"Error verifying message: {e}")
         return False, None, debug_info
+
+def get_agent_by_id(client, agent_id):
+    """
+    Fetch an agent by its ID
+    
+    Args:
+        client: The AgentStoreClient instance
+        agent_id: String ID of the agent to retrieve
+    
+    Returns:
+        Agent object if found, None otherwise
+    """
+    # Derive the PDA (Program Derived Address) for this agent
+    seeds = [bytes(agent_id, 'utf-8')]
+    agent_pubkey, _ = Pubkey.find_program_address(seeds, client.program_id)
+    
+    # Get the account data
+    account_info = client.get_account_info(agent_pubkey)
+    
+    if not account_info:
+        print(f"No agent found with ID: {agent_id}")
+        return None
+    
+    # Deserialize the data (implementation depends on your serialization)
+    # This is a simplified example of deserialization
+    try:
+        # Skip the first byte (instruction identifier)
+        data = account_info.data[1:]
+        
+        # Helper function to read a string field
+        def read_string(data, pos):
+            # Read length (4 bytes)
+            length = int.from_bytes(data[pos:pos+4], 'little')
+            # Read string data
+            string_data = data[pos+4:pos+4+length].decode('utf-8')
+            # Return string and new position
+            return string_data, pos+4+length
+        
+        # Read all fields
+        pos = 0
+        agent_name, pos = read_string(data, pos)
+        agent_id, pos = read_string(data, pos)
+        agent_public_key, pos = read_string(data, pos)
+        signing_authority, pos = read_string(data, pos)
+        number_of_calls, pos = read_string(data, pos)
+        avg_customer_rating, pos = read_string(data, pos)
+        
+        # Create and return the Agent object
+        return Agent(
+            agent_name=agent_name,
+            agent_id=agent_id,
+            agent_public_key=agent_public_key,
+            signing_authority=signing_authority,
+            number_of_calls=number_of_calls,
+            avg_customer_rating=avg_customer_rating
+        )
+    except Exception as e:
+        print(f"Error deserializing agent data: {e}")
+        return None
 
 # Web UI routes
 @app.route('/')
