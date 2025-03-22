@@ -12,7 +12,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
             background-color: #000;
             color: #fff;
@@ -23,6 +22,7 @@
             max-width: 500px;
             text-align: center;
             padding: 20px;
+            margin-top: 60px; /* Add space for fixed tabs */
         }
         
         .title {
@@ -137,25 +137,150 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Tab styling */
+        .tabs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background-color: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            letter-spacing: 0.5px;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .tab:hover {
+            color: #fff;
+        }
+        
+        .tab.active {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #fff;
+        }
+        
+        .tab-content {
+            display: none;
+            width: 100%;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Wallet address input styling */
+        .wallet-input {
+            width: 90%;
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: #fff;
+            font-family: monospace;
+            margin: 0 auto 20px auto;
+            resize: none;
+            text-align: center;
+            display: block;
+        }
+        
+        .wallet-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        
+        .wallet-label {
+            display: block;
+            text-align: center;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .balance-display {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #fff;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .button-group .button {
+            flex: 0 0 48%;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="statusDisplay" class="status-display">Initializing...</div>
-        <a id="agentProfileLink" href="/agent_profile" class="agent-profile-link" style="display: none;">agent profile on blockchain</a>
+        <!-- Tab navigation -->
+        <div class="tabs">
+            <button id="identifyTab" class="tab active">Identify</button>
+            <button id="reviewTab" class="tab">Review</button>
+        </div>
         
-        <div class="record-container">
-            <div id="circleText" class="circle-text">Ready</div>
-            <!-- 3D visualizer container -->
-            <div id="visualizerContainer" class="visualizer-container">
-                <!-- Three.js visualizer will be inserted here -->
+        <!-- Identify tab content -->
+        <div id="identifyContent" class="tab-content active">
+            <div id="statusDisplay" class="status-display">Initializing...</div>
+            <a id="agentProfileLink" href="/agent_profile" class="agent-profile-link" style="display: none;">agent profile on blockchain</a>
+            
+            <div class="record-container">
+                <div id="circleText" class="circle-text">Ready</div>
+                <!-- 3D visualizer container -->
+                <div id="visualizerContainer" class="visualizer-container">
+                    <!-- Three.js visualizer will be inserted here -->
+                </div>
+            </div>
+            
+            <button id="validateBtn" class="button">Validate</button>
+            
+            <div id="loadingIndicator" class="loading-indicator">
+                <div class="spinner"></div>
             </div>
         </div>
         
-        <button id="validateBtn" class="button">Validate</button>
-        
-        <div id="loadingIndicator" class="loading-indicator">
-            <div class="spinner"></div>
+        <!-- Review tab content -->
+        <div id="reviewContent" class="tab-content">
+            <label class="wallet-label">Wallet Address</label>
+            <textarea class="wallet-input" rows="2" readonly>8ZpYSjhw2hAi5xmQZyyCXCVMVYzWZNEBEXdTP1RUsrjF</textarea>
+            
+            <div class="balance-display">0.00 SOL</div>
+            
+            <div class="button-group">
+                <button class="button" id="refreshWalletBtn">Refresh wallet</button>
+                <button class="button" id="playCodeBtn">Play code</button>
+            </div>
         </div>
     </div>
     
@@ -167,5 +292,69 @@
     
     <!-- Load application script -->
     <script type="module" src="/static/app.js"></script>
+    
+    <!-- Tab switching script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const identifyTab = document.getElementById('identifyTab');
+            const reviewTab = document.getElementById('reviewTab');
+            const identifyContent = document.getElementById('identifyContent');
+            const reviewContent = document.getElementById('reviewContent');
+            
+            identifyTab.addEventListener('click', function() {
+                identifyTab.classList.add('active');
+                reviewTab.classList.remove('active');
+                identifyContent.classList.add('active');
+                reviewContent.classList.remove('active');
+            });
+            
+            reviewTab.addEventListener('click', function() {
+                reviewTab.classList.add('active');
+                identifyTab.classList.remove('active');
+                reviewContent.classList.add('active');
+                identifyContent.classList.remove('active');
+            });
+            
+            // Add refresh wallet functionality
+            const refreshWalletBtn = document.getElementById('refreshWalletBtn');
+            const balanceDisplay = document.querySelector('.balance-display');
+            const walletInput = document.querySelector('.wallet-input');
+            
+            refreshWalletBtn.addEventListener('click', function() {
+                // Show loading animation
+                refreshWalletBtn.textContent = 'Refreshing...';
+                
+                // Get wallet address from the textarea
+                const walletAddress = walletInput.value.trim();
+                
+                // Call the refresh wallet endpoint
+                fetch('/refresh_wallet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        wallet_address: walletAddress
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Update the balance display
+                        balanceDisplay.textContent = `${data.balance} ${data.currency}`;
+                    } else {
+                        console.error('Error refreshing wallet:', data.message);
+                    }
+                    
+                    // Reset button text
+                    refreshWalletBtn.textContent = 'Refresh wallet';
+                })
+                .catch(error => {
+                    console.error('Error refreshing wallet:', error);
+                    refreshWalletBtn.textContent = 'Refresh wallet';
+                });
+            });
+        });
+    </script>
 </body>
 </html> 

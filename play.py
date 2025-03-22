@@ -187,6 +187,25 @@ def identify_endpoint():
             'message': 'Failed to encrypt message'
         }), 500
 
+@app.route('/refresh_wallet', methods=['POST'])
+def refresh_wallet():
+    if not request.json or 'wallet_address' not in request.json:
+        abort(400, description="Request must include a 'wallet_address' field")
+    
+    wallet_address = request.json['wallet_address']
+    
+    # Print the refresh message to console
+    print(f"Refreshing wallet {wallet_address} with 0.05 SOL")
+    
+    # In a real application, this would query a blockchain API
+    # For this demo, we'll just return a fixed amount
+    return jsonify({
+        'status': 'success',
+        'wallet_address': wallet_address,
+        'balance': '0.05',
+        'currency': 'SOL'
+    })
+
 @app.route('/validate', methods=['POST'])
 def validate_endpoint():
     # Check for decoded_text in the request
